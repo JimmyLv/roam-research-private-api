@@ -47,7 +47,7 @@ class RoamPrivateApi {
 
 	/**
 	 * Create a block as a child of block.
-	 * @param {string} text 
+	 * @param {string} text
 	 * @param {uid} uid - parent UID where block has to be inserted.
 	 */
 	async createBlock( text, uid ) {
@@ -55,14 +55,15 @@ class RoamPrivateApi {
 			if ( ! window.roamAlphaAPI ) {
 				return Promise.reject( 'No Roam API detected' );
 			}
-			const result = window.roamAlphaAPI.createBlock(
-				{"location": 
-					{"parent-uid": uid, 
-					 "order": 0}, 
-				 "block": 
-					{"string": text}})
-			console.log( result );
-			return Promise.resolve( result );
+			const newUid = window.roamAlphaAPI.util.generateUID();
+			window.roamAlphaAPI.createBlock(
+				{"location":
+					{"parent-uid": uid,
+					 "order": 0},
+				 "block":
+					{"string": text, uid: newUid}})
+			console.log( newUid );
+			return Promise.resolve( newUid );
 		}, text, uid );
 		// Let's give time to sync.
 		await this.page.waitForTimeout( 1000 );
@@ -210,7 +211,7 @@ class RoamPrivateApi {
 	/**
 	 * Import blocks to your Roam graph
 	 * @see examples/import.js.
-	 * @param {array} items 
+	 * @param {array} items
 	 */
 	async import( items = [] ) {
 		const fileName = path.resolve( this.options.folder, 'roam-research-private-api-sync.json' );
@@ -238,7 +239,7 @@ class RoamPrivateApi {
 
 	/**
 	 * Inserts text to your quickcapture.
-	 * @param {string} text 
+	 * @param {string} text
 	 */
 	async quickCapture( text = [] ) {
 		await this.logIn();
@@ -264,7 +265,7 @@ class RoamPrivateApi {
 
 	/**
 	 * Click item in the side-menu. This is mostly internal.
-	 * @param {string} title 
+	 * @param {string} title
 	 */
 	async clickMenuItem( title ) {
 		await this.page.click( '.bp3-icon-more' );
@@ -284,7 +285,7 @@ class RoamPrivateApi {
 
 	/**
 	 * Download Roam export to a selected folder.
-	 * @param {string} folder 
+	 * @param {string} folder
 	 */
 	async downloadExport( folder ) {
 		await this.page._client.send( 'Page.setDownloadBehavior', {
@@ -331,7 +332,7 @@ class RoamPrivateApi {
 
 	/**
 	 * Get the freshest file in the directory, for finding the newest export.
-	 * @param {string} dir 
+	 * @param {string} dir
 	 */
 	getLatestFile( dir ) {
 		const orderReccentFiles = ( dir ) =>
@@ -351,8 +352,8 @@ class RoamPrivateApi {
 
 	/**
 	 * Unzip the export and get the content.
-	 * @param {string} dir 
-	 * @param {string} file 
+	 * @param {string} dir
+	 * @param {string} file
 	 */
 	getContentsOfRepo( dir, file ) {
 		return new Promise( ( resolve, reject ) => {
@@ -374,7 +375,7 @@ class RoamPrivateApi {
 						if ( err ) {
 							reject( err );
 						} else {
-							resolve( JSON.parse( data ) );	
+							resolve( JSON.parse( data ) );
 						}
 					} );
 				}, 1000 );
