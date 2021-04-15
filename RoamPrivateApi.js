@@ -201,8 +201,8 @@ class RoamPrivateApi {
 			throw e;
 		}
 		// Login
-		await this.page.type( 'input[name=email]', this.login );
-		await this.page.type( 'input[name=password]', this.pass );
+		await this.page.type( 'input[name=email]', JSON.stringify(this.login) );
+		await this.page.type( 'input[name=password]', JSON.stringify(this.pass) );
 		await this.page.click( '.bp3-button' );
 		await this.page.waitForSelector( '.bp3-icon-more' );
 		return;
